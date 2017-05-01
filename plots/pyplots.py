@@ -128,10 +128,10 @@ def make_bias_combined():
         t.rename_column('DEJ2000','dec_1')
 
     fig,ax = pyplot.subplots(4,2, figsize=(8,8), sharex=True)
-    for p, ax1, txt in zip(['ra','dec','peak_flux','a','b','pa'], ax.ravel()[2:], ['RA (arcsec)','Dec (arcsec)','$S_p$ (Jy/Beam)', 'a (arcsec)', 'b (arcsec)', "PA (deg)"]):
+    for p, ax1, txt in zip(['ra','dec','peak_flux','a','b','pa'], ax.ravel()[2:], ['RA (%)','Dec (%)','$S_p$ (%)', 'a (%)', 'b (%)', "PA (%)"]):
         make_bias_plot(p, ax1, txt, (withC, withoutC))
 
-    for i in range(3):
+    for i in range(4):
         ax[i,0].set_ylabel('Bias', fontsize=14)
 
     ax[3,0].set_xlabel('Measured SNR (Peak/RMS)', fontsize=14)
@@ -149,6 +149,6 @@ def make_bias_combined():
 
 
 if __name__=="__main__":
-    #make_err_combined()
+    make_err_combined()
     make_bias_combined()
 
