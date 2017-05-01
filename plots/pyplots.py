@@ -73,6 +73,7 @@ def make_err_combined():
     legend = pyplot.figlegend(*ax[2,0].get_legend_handles_labels(), loc =[0.55, 0.11], fontsize=12)
     # hide the axes of the unused plot
     ax[2,1].axis('off')
+    pyplot.figtext(0.5, 0.9, s='Accuracy of reported uncertainties', fontsize=16, ha='center')
     pyplot.savefig('err_combined.png')
 
 
@@ -127,23 +128,23 @@ def make_bias_combined():
         t.rename_column('dec','dec_2')
         t.rename_column('DEJ2000','dec_1')
 
-    fig,ax = pyplot.subplots(4,2, figsize=(8,8), sharex=True)
-    for p, ax1, txt in zip(['ra','dec','peak_flux','a','b','pa'], ax.ravel()[2:], ['RA (%)','Dec (%)','$S_p$ (%)', 'a (%)', 'b (%)', "PA (%)"]):
+    fig,ax = pyplot.subplots(3,2, figsize=(8,8), sharex=True)
+    for p, ax1, txt in zip(['ra','dec','peak_flux','a','b',], ax.ravel(), ['RA (%)','Dec (%)','$S_p$ (%)', 'a (%)', 'b (%)']):
         make_bias_plot(p, ax1, txt, (withC, withoutC))
 
-    for i in range(4):
+    for i in range(3):
         ax[i,0].set_ylabel('Bias', fontsize=14)
 
-    ax[3,0].set_xlabel('Measured SNR (Peak/RMS)', fontsize=14)
-    ax[3,1].set_xlabel('Measured SNR (Peak/RMS)', fontsize=14)
+    ax[2,0].set_xlabel('Measured SNR (Peak/RMS)', fontsize=14)
+    ax[1,1].set_xlabel('Measured SNR (Peak/RMS)', fontsize=14)
 
     # make the legend replace the unused subplot
-    legend = pyplot.figlegend(*ax[2,0].get_legend_handles_labels(), loc =[0.35, 0.7], fontsize=12)
+    legend = pyplot.figlegend(*ax[2,0].get_legend_handles_labels(), loc =[0.55, 0.11], fontsize=12)
     #hide the axes of the unused plot
-    ax[0,1].axis('off')
-    ax[0,0].axis('off')
-    ax[3,0].set_xlim((5,5e4))
-
+    #ax[0,1].axis('off')
+    ax[2,1].axis('off')
+    ax[2,0].set_xlim((5,5e4))
+    pyplot.figtext(0.5, 0.9, s='Fractional bias in fit parameters', fontsize=16, ha='center')
     pyplot.savefig('bias_combined.png')
 
 
