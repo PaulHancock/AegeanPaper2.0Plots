@@ -4,7 +4,7 @@ AUXFILES = bane_bkg.fits bane_rms.fits zones_rms.fits zones_bkg.fits
 
 CATALOGUES = bane_comp.vot bane_comp.reg zones_comp.vot zones_comp.reg false_positives.vot false_positives.reg prior_comp.vot bane_prior_xm.vot 
 
-PLOTS = false_positive.png priorized_hist.png phoenix.png sim.png overlaps.png ds9.png mask.png
+PLOTS = false_positive.png priorized_hist.png phoenix.png sim.png overlaps.png ds9.png mask.png false_detection.png false_positives.png
 
 MIMAS = mask.mim mask.reg 
 
@@ -47,7 +47,10 @@ false_positives.reg: false_positives.vot
 	echo 'global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1' >> $@
 	$(STILTS) tpipe cmd='keepcols "ra_str dec_str"' in=false_positives.vot | grep --line-buffered '^|.*:' | awk '{print "point("$$2","$$4") # point=x"}' >> $@
 
-false_positive.png: zones_plot_example.py 1997.fits zones_bkg.fits zones_rms.fits bane_bkg.fits bane_rms.fits
+false_detection.png: zones_plot_example.py 1997.fits zones_bkg.fits zones_rms.fits bane_bkg.fits bane_rms.fits
+	python $<
+
+false_positives.png: false_positives.py zones_rms.fits bane_rms.fits false_positives.vot
 	python $<
 
 prior_comp.vot: bane_comp.vot 1997.fits
