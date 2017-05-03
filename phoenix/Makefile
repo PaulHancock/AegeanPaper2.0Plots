@@ -4,7 +4,7 @@ AUXFILES = bane_bkg.fits bane_rms.fits zones_rms.fits zones_bkg.fits
 
 CATALOGUES = bane_comp.vot bane_comp.reg zones_comp.vot zones_comp.reg false_positives.vot false_positives.reg prior_comp.vot bane_prior_xm.vot 
 
-PLOTS = false_positive.png priorized_hist.png phoenix.png sim.png overlaps.png ds9.png mask.png false_detection.png false_positives.png
+PLOTS = priorized_hist.png phoenix.png sim.png overlaps.png ds9.png mask.png false_detection.png false_positives.png
 
 MIMAS = mask.mim mask.reg 
 
@@ -49,9 +49,11 @@ false_positives.reg: false_positives.vot
 
 false_detection.png: zones_plot_example.py 1997.fits zones_bkg.fits zones_rms.fits bane_bkg.fits bane_rms.fits
 	python $<
+	convert $@ -trim $@
 
 false_positives.png: false_positives.py zones_rms.fits bane_rms.fits false_positives.vot
 	python $<
+	convert $@ -trim $@
 
 prior_comp.vot: bane_comp.vot 1997.fits
 	aegean --priorized=1 --input=bane_comp.vot --table=prior.vot 1997.fits
@@ -73,10 +75,12 @@ overlaps.png: regroup_example.py 1997.fits bane_comp.vot
 
 ds9.png: 1997.fits bane_comp.reg
 	 ~/Software/DS9/ds9 -single 1997.fits -cmap cubehelix0 -crop 1937 800 60 60 -pan 1937 800 \
-	-zoom to fit -zoom to 5 -scale limits -1e-3 5e-3 -region load bane_comp.reg \
+	-zoom to fit -zoom to 5.5 -scale limits -1e-3 5e-3 -region load bane_comp.reg \
 	-grid yes -grid type publication -grid numerics type exterior -grid axes type exterior \
 	-grid grid no -grid numerics color black -grid axes color black -colorbar off \
+	-grid title no \
 	-saveimage ds9.png -exit
+	convert $@ -trim $@
 
 mask.mim:
 	MIMAS -depth 12 +c 17.8 -45.5 0.5 +c 17.8 -46.0 0.5 +c 18.0675096614 -45.625 0.5 +c 18.0675096614 -45.875 0.5 +c 17.5324903386 -45.625 0.5 +c 17.5324903386 -45.875 0.5 -o mask.mim
@@ -89,5 +93,7 @@ mask.png: 1997.fits mask.reg
 	-zoom to fit -zoom to 0.115 -scale limits 0 4e-4 -region load mask.reg \
 	-grid yes -grid type publication -grid numerics type exterior -grid axes type exterior \
 	-grid grid no -grid numerics color black -grid axes color black -colorbar off \
+	-grid title no \
 	-saveimage mask.png -exit
+	convert $@ -trim $@
 FORCE:
