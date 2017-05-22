@@ -1,3 +1,4 @@
 *.vot
 *.fits
 SimulatedSky.vot
+.idea/*
