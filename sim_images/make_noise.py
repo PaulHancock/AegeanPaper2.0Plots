@@ -86,7 +86,7 @@ def main():
     print "wrote temp.fits"
 
     print "Convolving with variable psf"
-    wcsh = WCSHelper.from_file('bane.fits')
+    wcsh = WCSHelper.from_file('bane_smooth.fits')
     psfh = PSFHelper('psf.fits', wcsh)
     smoothed = convolve(noise, psfh)
 
