@@ -4,10 +4,8 @@ from AegeanTools.fitting import elliptical_gaussian
 from AegeanTools.wcs_helpers import WCSHelper, PSFHelper
 from astropy.io import fits
 import numpy as np
-from scipy.ndimage.filters import gaussian_filter
 
-sigma = 25e-6
-
+FWHM2CC = 1./np.sqrt(8*np.log(2))
 
 def make_kern(size, a, b, pa):
     """
@@ -22,9 +20,12 @@ def make_kern(size, a, b, pa):
     # ensure that the size is odd
     if not (size % 2):
         size += 1
+    # ensure that we have each dimension is at least 3x a
+    if size < 3*a*FWHM2CC:
+        size = int(3*a*FWHM2CC)
     shape = (size, size)
     xo, yo = np.indices(shape)
-    amp, x, y, sx, sy, theta = 1, shape[0]/2, shape[1]/2, a, b, pa
+    amp, x, y, sx, sy, theta = 1, shape[0]/2, shape[1]/2, a*FWHM2CC, b*FWHM2CC, pa
     kernel = elliptical_gaussian(xo, yo, amp, x, y, sx, sy, theta)
     kernel /= np.sum(kernel)
     return kernel
@@ -32,20 +33,24 @@ def make_kern(size, a, b, pa):
 
 def get_kernel(x, y, psf):
     beam = psf.get_pixbeam_pixel(x, y)
+    if beam is None:
+        return None
     a, b, pa = beam.a, beam.b, beam.pa
-    return make_kern(5, a, b, pa)
+    return make_kern(11, a, b, pa)
 
 
 def convolve(noise, psf):
     # Create a new array for the smoothed data
-    smoothed = np.zeros_like(noise)
+    smoothed = np.zeros_like(noise) * np.nan
     # loop over the array
     print "convolve start"
-    for i in xrange(1000):#noise.shape[0]):
-        for j in xrange(1000):#noise.shape[1]):
+    for i in xrange(noise.shape[0]):
+        for j in xrange(noise.shape[1]):
             # at each pixel in the smoothed array we calculate the weighted average
             # get the convolution kernel and the indices into it
             kernel = get_kernel(i, j, psf)
+            if kernel is None:
+                continue
             k, l = np.indices(kernel.shape)
             # the x,y need to be indices into the noise array
             # and we want this to be relative to the center of the kernel
@@ -64,15 +69,20 @@ def main():
     # make the noise vary as as if there are a bunch of tessellated observations
     # Each obs should have a different noise contribution
     # print "Creating noise with imprinted variation"
-    noise_map = fits.open('bane.fits')
+    noise_map = fits.open('bane_smooth.fits')
 
     print "Creating noise map"
-    noise = np.random.normal(0,1,noise_map[0].data.shape)
+    # gaussian noise with sigma = 1
+    noise = np.random.normal(0, 1, noise_map[0].data.shape)
 
     print "imprinting pattern onto noise"
-    noise *= 1 + noise_map[0].data/255.
+    # rescale the noise so that some parts of the map have 3x the noise of others
+    # and imprint a pattern into the noise
+    noise *= 1 + 2*noise_map[0].data
+    # rescale to have 1sigma = 0.1Jy
+    noise *= 0.1
     noise_map[0].data = np.float32(noise)
-    noise_map.writeto('temp.fits',overwrite=True)
+    noise_map.writeto('temp.fits', overwrite=True)
     print "wrote temp.fits"
 
     print "Convolving with variable psf"
