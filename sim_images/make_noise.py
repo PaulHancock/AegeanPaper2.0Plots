@@ -69,8 +69,10 @@ def main():
     # make the noise vary as as if there are a bunch of tessellated observations
     # Each obs should have a different noise contribution
     # print "Creating noise with imprinted variation"
+    print "creating rms map"
     noise_map = fits.open('bane_smooth.fits')
-
+    noise_map[0].data = np.float32(0.1*(1+2*noise_map[0].data))
+    noise_map.writeto('rms.fits', overwrite=True)
     print "Creating noise map"
     # gaussian noise with sigma = 1
     np.random.seed(69084124)
@@ -79,10 +81,7 @@ def main():
     print "imprinting pattern onto noise"
     # rescale the noise so that some parts of the map have 3x the noise of others
     # and imprint a pattern into the noise
-    noise *= 1 + 2*noise_map[0].data
-    # rescale to have 1sigma = 0.1Jy
-    noise *= 0.1
-    noise_map[0].data = np.float32(noise)
+    noise_map[0].data *= noise
     noise_map.writeto('temp.fits', overwrite=True)
     print "wrote temp.fits"
 
