@@ -1,0 +1,27 @@
+#! python
+__author__ = 'Paul Hancock'
+__date__ = ''
+
+from astropy.io import fits
+import numpy as np
+from scipy.ndimage import gaussian_filter
+
+
+def main():
+    # Load background image and normalise to be 0-1
+    background = gaussian_filter(fits.open('moon.fits')[0].data/255., sigma=150)
+    background -= np.min(background)
+    background /= np.max(background)
+    # background to have positive and negative components, with a magnitude of 10\sigma
+    background = (background-0.5) * 10 * 0.1
+    # load the noise image
+    rms = fits.open('noise.fits')[0].data
+
+    # load the image with the sources in it
+    model = fits.open('model.fits')
+    model[0].data += background + rms
+    model.writeto('SimulatedImage.fits', overwrite=True)
+
+
+if __name__ == "__main__":
+    main()
