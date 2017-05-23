@@ -73,6 +73,7 @@ def main():
 
     print "Creating noise map"
     # gaussian noise with sigma = 1
+    np.random.seed(69084124)
     noise = np.random.normal(0, 1, noise_map[0].data.shape)
 
     print "imprinting pattern onto noise"
