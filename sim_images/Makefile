@@ -7,3 +7,6 @@ noise.fits: make_noise.py bane_smooth.fits psf.fits
 
 catalogue.fits: make_catalogue.py psf.fits blank.fits
 	python $<
+
+SimulatedImage.fits: make_final_image.py moon.fits noise.fits model.fits
+	python $<
