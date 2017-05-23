@@ -17,8 +17,7 @@ def main():
     background /= np.max(background)
     # background to have positive and negative components, with a magnitude of 10\sigma
     background = (background-0.5) * 10 * 0.1
-    moon[0].data = background
-
+    moon[0].data = np.float32(background)
     print "saving background.fits"
     moon.writeto('background.fits', overwrite=True)
 
