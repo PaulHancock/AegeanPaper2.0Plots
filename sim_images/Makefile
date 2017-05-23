@@ -10,3 +10,15 @@ catalogue.fits: make_catalogue.py psf.fits blank.fits
 
 SimulatedImage.fits: make_final_image.py moon.fits noise.fits model.fits
 	python $<
+
+SimulatedImage_bkg.fits SimulatedImage_rms.fits: SimulatedImage.fits
+	BANE $<
+
+SimulatedImage_withC_comp.fits: SimulatedImage.fits SimulatedImage_bkg.fits SimulatedImage_rms.fits
+	aegean --autoload $< --psf psf.fits --table $(subst _comp,,$@)
+
+SimulatedImage_withoutC_comp.fits: SimulatedImage.fits SimulatedImage_bkg.fits SimulatedImage_rms.fits
+	aegean --autoload $< --psf psf.fits --table $(subst _comp,,$@) --nocov
+
+SimulatedImage_condon_comp.fits: SimulatedImage.fits SimulatedImage_bkg.fits SimulatedImage_rms.fits
+	aegean --autoload $< --psf psf.fits --table $(subst _comp,,$@) --nocov --condon
