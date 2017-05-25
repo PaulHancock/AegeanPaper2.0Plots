@@ -57,7 +57,7 @@ def make_err_combined():
     withC.title = 'Errors from $J^TC^{-1}J$'
     withoutC = Table.read('SimulatedImage_withoutC.fits')
     withoutC.title = 'Errors from $J^TJ$'
-    condon = Table.read('SimualtedImage_condon.fits')
+    condon = Table.read('SimulatedImage_condon.fits')
     condon.title = "Errors from Condon'97"
 
     fig, ax = pyplot.subplots(3, 2, figsize=(8, 6))  # , sharex=True)
