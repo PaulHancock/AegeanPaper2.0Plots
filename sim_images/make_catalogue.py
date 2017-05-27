@@ -70,7 +70,7 @@ def make_catalogue(nsrc, outfile):
     a = fits.Column(array=shapes[:, 0], format='D', name='a')
     b = fits.Column(array=shapes[:, 1], format='D', name='b')
     pa = fits.Column(array=shapes[:, 2], format='D', name='pa')
-
+    # the bmaj/bmin/bpa are the same as the a/b/pa -> we have only point sources
     bmaj = fits.Column(array=shapes[:, 0], format='D', name='psf_a')
     bmin = fits.Column(array=shapes[:, 1], format='D', name='psf_b')
     bpa = fits.Column(array=shapes[:, 2], format='D', name='psf_pa')
