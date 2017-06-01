@@ -138,7 +138,7 @@ def make_bias_combined():
     ax[1, 1].set_xlabel('Measured SNR (Peak/RMS)', fontsize=14)
 
     # make the legend replace the unused subplot
-    legend = pyplot.figlegend(*ax[2, 0].get_legend_handles_labels(), loc=[0.55, 0.11], fontsize=12)
+    legend = pyplot.figlegend(*ax[2, 0].get_legend_handles_labels(), loc=[0.55, 0.16], fontsize=12)
     # hide the axes of the unused plot
     ax[2, 1].axis('off')
     ax[2, 0].set_xlim((5, 1e3))
