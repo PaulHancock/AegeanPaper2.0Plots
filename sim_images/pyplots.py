@@ -43,7 +43,7 @@ def make_err_plot(par, ax1=None, annotate=None, tabs=(None, None, None)):
     ax1.set_yticklabels([])
     if annotate is not None:
         ymax = ax1.get_ylim()[1]
-        ax1.text(-2, 0.8 * ymax, annotate, fontsize=12)
+        ax1.text(1, 0.8 * ymax, annotate, fontsize=12)
 
     if ax1 is None:
         out_name = 'hist_comp_{0}.png'.format(par)
