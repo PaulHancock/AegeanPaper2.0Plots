@@ -36,3 +36,5 @@ SimulatedImage_condon.fits : catalogue.fits SimulatedImage_condon_comp.fits
 
 err_combined.png bias_combined.png: pyplots.py SimulatedImage_withC.fits SimulatedImage_withoutC.fits SimulatedImage_condon.fits
 	python pyplots.py > results.dat
+	convert err_combined.png -trim err_combined.png
+	convert bias_combined.png -trim bias_combined.png
