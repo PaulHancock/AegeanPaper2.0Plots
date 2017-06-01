@@ -48,3 +48,19 @@ sim.png: SimulatedImage.fits
 	-grid border color black -grid title no \
 	-saveimage $@ -exit
 	convert $@ -trim $@
+
+bkg.png: SimulatedImage_bkg.fits
+	 ~/Software/DS9/ds9 -single $< -cmap gray \
+	-zoom to fit -zoom to 0.04 -scale limits -0.5 0.5 \
+	-colorbar off \
+	-grid border color black \
+	-saveimage $@ -exit
+	convert $@ -trim $@
+
+rms.png: SimulatedImage_rms.fits
+	 ~/Software/DS9/ds9 -single $< -cmap gray \
+	-zoom to fit -zoom to 0.04 -scale limits 0 0.1 \
+	-colorbar off \
+	-grid border color black \
+	-saveimage $@ -exit
+	convert $@ -trim $@
