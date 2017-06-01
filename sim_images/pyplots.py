@@ -104,7 +104,7 @@ def make_bias_plot(par, ax1=None, annotate=None, tabs=(None, None)):
     elif par in ['ra', 'dec']:
         ax1.set_ylim((-0.5, 0.5))
     elif par in ['peak_flux']:
-        ax1.set_ylim((-10, 10))
+        ax1.set_ylim((-5, 5))
     else:
         ylim = ax1.get_ylim()
         ymx = max(abs(ylim[0]), abs(ylim[1]))
