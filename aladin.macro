@@ -1,0 +1,9 @@
+load /home/hancock/alpha/AegeanPaperTesting/footprint_MOC.fits
+set projection=aitoff
+180 0
+zoom 360 deg
+setconf overlays=-label
+setconf overlays=+grid
+setconf overlays=-scale
+save /home/hancock/alpha/AegeanPaperTesting/moc.png
+quit
