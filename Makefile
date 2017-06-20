@@ -2,6 +2,7 @@ SIMDATA = MapF00E07.fits  MapF02E07.fits  MapF04E07.fits  MapF06E07.fits  MapF08
 
 # Edit this to be the path of your stilts.jar file
 STILTS = java -jar ~/Software/stilts.jar
+ALADIN = ~/Software/Aladin/Aladin
 
 Field0%_withoutC.vot : Field0%.vot MapF0%E07_withoutC_comp.fits
 	$(STILTS) tmatch2 in1=$< in2=`echo $(word 2, $^)`  matcher=sky values1='RAJ2000 DEJ2000' values2='ra dec' out=$@ params=30
@@ -59,6 +60,10 @@ All_fields_condon.fits : Field00_condon.vot  Field02_condon.vot  Field04_condon.
 	in8=Field07_condon.vot in9=Field08_condon.vot \
 	in10=Field09_condon.vot out=All_fields_condon.fits
 
+# MOC
+moc.png: footprint_MOC.fits aladin.macro
+	cat aladin.macro | $(ALADIN)
+	convert $@ -trim $@
 
 # Making a bunch of plots
 .PHONY: plots
