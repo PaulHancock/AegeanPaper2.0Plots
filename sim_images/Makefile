@@ -64,3 +64,24 @@ rms.png: SimulatedImage_rms.fits
 	-grid border color black \
 	-saveimage $@ -exit
 	convert $@ -trim $@
+
+#make sub image and process
+sub.fits sub_rms.fits sub_bkg.fits: SimulatedImage.fits SimulatedImage_bkg.fits SimulatedImage_rms.fits psf.fits cut.sh
+	./cut.sh
+
+sub_comp.reg sub_isle.reg: sub.fits sub_rms.fits sub_bkg.fits
+	aegean --autoload $< --psf psf.fits --table $<,sub.reg --island
+
+island.png: sub.fits sub_comp.reg sub_isle.reg
+	echo 'global color=red font="times 24 bold"' > olay.reg
+	cat  sub_comp.reg >> olay.reg
+	echo "global color=green" >> olay.reg
+	cat  sub_isle.reg >> olay.reg
+	 ~/Software/DS9/ds9 -single $< -cmap gray \
+	-zoom to fit -zoom to 15 -scale limits -0.2 1 \
+	-regions load olay.reg \
+	-regions select all -regions width 3 -regions select none \
+	-colorbar off \
+	-grid border color black \
+	-saveimage $@ -exit
+	convert $@ -trim $@
