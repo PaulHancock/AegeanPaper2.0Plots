@@ -11,6 +11,57 @@ def make_err_plot(par, ax1=None, annotate=None, tabs=(None, None, None)):
     if ax1 is None:
         fig = pyplot.figure()
         ax1 = fig.add_subplot(1, 1, 1)
+    nbins = np.arange(-5, 5, 0.1)
+
+    print par
+    onebox_x = [-1, -1, 1, 1]
+    onebox_y = [0, 1/2.355, 1/2.355, 0]
+    for tab in tabs:
+        if par == 'position':
+            mask = np.where((tab['err_ra'] > 0) & (tab['err_dec'] > 0))
+            # compute the z-score
+            data = ((tab['ra_1'][mask] - tab['ra_2'][mask]) / tab['err_ra'][mask] +
+                    (tab['dec_1'][mask] - tab['dec_2'][mask]) / tab['err_dec'][mask]) / np.sqrt(2)
+        else:
+            mask = np.where((tab['err_{0}'.format(par)] > 0))
+            data = (tab['{0}_1'.format(par)][mask] - tab['{0}_2'.format(par)][mask]) / \
+                    tab['err_{0}'.format(par)][mask]
+        data = data[np.isfinite(data)]
+        # compute a density normalised histogram and convert into a PDF
+        hist, _ = np.histogram(data, density=True, bins=nbins)
+        hist /= np.sum(hist)
+        # normalize to the peak:
+        hist /= np.max(hist)
+        # plot
+        steps_y = np.ravel([[a, a] for a in hist])
+        steps_x = np.ravel(zip(nbins[:-1], nbins[1:]))
+        ax1.fill_between(steps_x, 0, steps_y, label=tab.title, alpha=0.5)
+        ax1.plot(steps_x, steps_y)
+        ax1.plot(onebox_x, onebox_y, 'k-')
+        # median of data is the 'central' value, and should be 0.0
+        # std of the data is the scatter in the fraction in dex
+        # sum of the histogram should be 1 if we have correctly normalised the plot
+
+        print "\t", tab.title
+        print "\t\tmedian", np.median(data)
+        print "\t\tstd", np.std(data)
+    # remove the ytick labels
+    ax1.set_yticklabels([])
+    if annotate is not None:
+        ymax = ax1.get_ylim()[1]
+        ax1.text(1, 0.8 * ymax, annotate, fontsize=12)
+
+    if ax1 is None:
+        out_name = 'hist_comp_{0}.png'.format(par)
+        pyplot.savefig(out_name)
+        print "wrote {0}".format(out_name)
+    return
+
+
+def make_err_plot_old(par, ax1=None, annotate=None, tabs=(None, None, None)):
+    if ax1 is None:
+        fig = pyplot.figure()
+        ax1 = fig.add_subplot(1, 1, 1)
     nbins = np.arange(-2, 2, 0.1)
 
     print par
@@ -68,8 +119,8 @@ def make_err_combined():
     for i in range(3):
         ax[i, 0].set_ylabel('PDF', fontsize=14)
 
-    ax[2, 0].set_xlabel('log(|$\Delta/\sigma$|)', fontsize=14)
-    ax[1, 1].set_xlabel('log(|$\Delta/\sigma$|)', fontsize=14)
+    ax[2, 0].set_xlabel('$\Delta/\sigma$', fontsize=14)
+    ax[1, 1].set_xlabel('$\Delta/\sigma$', fontsize=14)
 
     # make the legend replace the unused subplot
     legend = pyplot.figlegend(*ax[2, 0].get_legend_handles_labels(), loc=[0.55, 0.11], fontsize=12)
@@ -148,5 +199,5 @@ def make_bias_combined():
 
 if __name__ == "__main__":
     make_err_combined()
-    make_bias_combined()
+    #make_bias_combined()
 
