@@ -5,6 +5,7 @@ from astropy.io import fits
 from astropy.table import Table
 import numpy as np
 from matplotlib import pyplot
+import math
 
 
 def make_err_plot(par, ax1=None, annotate=None, tabs=(None, None, None)):
@@ -15,7 +16,7 @@ def make_err_plot(par, ax1=None, annotate=None, tabs=(None, None, None)):
 
     print par
     onebox_x = [-1, -1, 1, 1]
-    onebox_y = [0, 1/2.355, 1/2.355, 0]
+    onebox_y = [0, 1/math.e, 1/math.e, 0]
     for tab in tabs:
         if par == 'position':
             mask = np.where((tab['err_ra'] > 0) & (tab['err_dec'] > 0))
