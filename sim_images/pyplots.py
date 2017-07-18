@@ -151,7 +151,7 @@ def make_bias_plot(par, ax1=None, annotate=None, tabs=(None, None)):
         means = np.array([np.mean(data[dig == j]) for j in range(len(bins))])
         ax1.plot(bins, means, label=tab.title)
 
-    if par in ['a', 'b']:
+    if par in ['a', 'b', 'int_flux']:
         ax1.set_ylim((-8, 8))
     elif par in ['ra', 'dec']:
         ax1.set_ylim((-0.5, 0.5))
@@ -178,8 +178,14 @@ def make_bias_combined():
     withoutC = Table.read('SimulatedImage_withoutC.fits')
     withoutC.title = 'Fitting without $C^{-1}$'
 
+    # withC.rename_column('int_flux', 'int_flux_2')
+    # withC.add_column(withC['peak_flux_1'], name='int_flux_1')
+    #
+    # withoutC.rename_column('int_flux', 'int_flux_2')
+    # withoutC.add_column(withoutC['peak_flux_1'], name='int_flux_1')
+
     fig, ax = pyplot.subplots(3, 2, figsize=(8, 8), sharex=True)
-    for p, ax1, txt in zip(['ra', 'dec', 'peak_flux', 'a', 'b', ], ax.ravel(),
+    for p, ax1, txt in zip(['ra', 'dec', 'peak_flux', 'a', 'b'], ax.ravel(),
                            ['RA (%)', 'Dec (%)', '$S_p$ (%)', 'a (%)', 'b (%)']):
         make_bias_plot(p, ax1, txt, (withC, withoutC))
 
@@ -199,6 +205,6 @@ def make_bias_combined():
 
 
 if __name__ == "__main__":
-    make_err_combined()
-    #make_bias_combined()
+    #make_err_combined()
+    make_bias_combined()
 
