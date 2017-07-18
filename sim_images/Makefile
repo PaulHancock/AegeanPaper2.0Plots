@@ -39,8 +39,9 @@ err_combined.png bias_combined.png: pyplots.py SimulatedImage_withC.fits Simulat
 	convert err_combined.png -trim err_combined.png
 	convert bias_combined.png -trim bias_combined.png
 
-sim.png: SimulatedImage.fits
-	 ~/Software/DS9/ds9 -single $< -cmap gray \
+sim.png: plot_simimage.py SimulatedImage.fits
+	python $<
+#	 ~/Software/DS9/ds9 -single $< -cmap gray \
 	-zoom to fit -zoom to 0.04 -scale limits -0.5 1 \
 	-grid yes -grid type publication -grid axes type exterior \
 	-grid numerics no -grid title no -grid labels no \
