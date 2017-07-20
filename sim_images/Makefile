@@ -41,13 +41,6 @@ err_combined.png bias_combined.png: pyplots.py SimulatedImage_withC.fits Simulat
 
 sim.png: plot_simimage.py SimulatedImage.fits
 	python $<
-#	 ~/Software/DS9/ds9 -single $< -cmap gray \
-	-zoom to fit -zoom to 0.04 -scale limits -0.5 1 \
-	-grid yes -grid type publication -grid axes type exterior \
-	-grid numerics no -grid title no -grid labels no \
-	-grid grid yes -grid grid color white -grid axes color white -colorbar off \
-	-grid border color black -grid title no \
-	-saveimage $@ -exit
 	convert $@ -trim $@
 
 bkg.png: SimulatedImage_bkg.fits
@@ -64,6 +57,19 @@ rms.png: SimulatedImage_rms.fits
 	-colorbar off \
 	-grid border color black \
 	-saveimage $@ -exit
+	convert $@ -trim $@
+
+SimulatedImage_withC_prior_comp.fits: SimulatedImage_withC_comp.fits SimulatedImage.fits
+	aegean --priorized=1 --table=Simulated_image_withC_prior.fits --psf psf.fits --autoload --input=SimulatedImage_withC_comp.fits  SimulatedImage.fits
+
+blind_prior_xm.fits: SimulatedImage_withC_comp.fits SimulatedImage_withC_prior_comp.fits
+	$(STILTS) tmatch2 find=best matcher=exact \
+	in1=$< values1='uuid' suffix1='_blind' \
+	in2=`echo $(word 2, $^)` values2='uuid' suffix2='_prior' \
+	join=1and2 fixcols=all out=$@ 
+
+priorized_hist.png: priorized_plots.py blind_prior_xm.fits
+	python $<
 	convert $@ -trim $@
 
 #make sub image and process
