@@ -1,5 +1,7 @@
 from astropy.io import fits
+from astropy.wcs import WCS
 import aplpy
+import pyregion
 
 def format(f):
     f.colorbar.set_axis_label_text('mJy/beam')
@@ -13,24 +15,52 @@ def format(f):
     f._ax1.tick_params(which='both', direction='in')
     f._ax2.tick_params(which='both', direction='in')
     
-phoenix = fits.open('1997.fits')
-phoenix[0].data *= 1e3
-sim = fits.open('../MapF00E07.fits')
-sim[0].data *= 1e3
 
-f = aplpy.FITSFigure(phoenix)
-f.show_grayscale(vmin=-0.2, vmax=1, invert=True)
-f.show_colorbar()
-f.recenter(17.807125,-45.756191, radius=0.82 )
-format(f)
-f.ticks.set_xspacing(0.25)
-f.ticks.set_yspacing(0.25)
-f.save('phoenix.png')
+def obsim():
+    phoenix = fits.open('1997.fits')
+    phoenix[0].data *= 1e3
+    f = aplpy.FITSFigure(phoenix)
+    f.show_grayscale(vmin=-0.2, vmax=1, invert=True)
+    f.add_colorbar()
+    f.recenter(17.807125, -45.756191, radius=0.82)
+    format(f)
+    f.ticks.set_xspacing(0.25)
+    f.ticks.set_yspacing(0.25)
+    f.save('phoenix.png')
+    return
 
-f = aplpy.FITSFigure(sim)
-f.show_grayscale(vmin=-0.2, vmax=1, invert=True)
-f.show_colorbar()
-format(f)
-f.ticks.set_xspacing(1)
-f.ticks.set_yspacing(1)
-f.save('sim.png')
+
+def obsrms():
+    phoenix_rms = fits.open('bane_rms.fits')
+    phoenix_rms[0].data *= 1e3
+    # remove the keywords that refer to dimensions 3/4 since they confuse aplpy
+    del phoenix_rms[0].header['*[34]']
+    f = aplpy.FITSFigure(phoenix_rms)
+    f.show_grayscale(vmin=0.1, vmax=1, invert=True)
+    f.add_colorbar()
+    f.recenter(17.807125, -45.756191, radius=0.82)
+    format(f)
+    f.ticks.set_xspacing(0.25)
+    f.ticks.set_yspacing(0.25)
+    f.show_regions('test.reg')
+    f.save('mask.png')
+
+
+def simim():
+    sim = fits.open('../MapF00E07.fits')
+    sim[0].data *= 1e3
+    f = aplpy.FITSFigure(sim)
+    f.show_grayscale(vmin=-0.2, vmax=1, invert=True)
+    f.add_colorbar()
+    format(f)
+    f.ticks.set_xspacing(1)
+    f.ticks.set_yspacing(1)
+    f.save('sim.png')
+    return
+
+if __name__ == "__main__":
+    obsim()
+    obsrms()
+    simim()
+
+
