@@ -61,6 +61,6 @@ def simim():
 if __name__ == "__main__":
     obsim()
     obsrms()
-    simim()
+    # simim()
 
 
