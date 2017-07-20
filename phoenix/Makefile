@@ -67,11 +67,15 @@ bane_prior_xm.vot: prior_comp.vot bane_comp.vot
 priorized_hist.png: priorized_plots.py bane_prior_xm.vot
 	python $<
 
-phoenix.png sim.png: image_plots.py 1997.fits ../MapF00E07.fits
+phoenix.png sim.png mask.png: image_plots.py 1997.fits ../MapF00E07.fits mask.reg
+	echo "global color=black wcs=wcs" > test.reg
+	sed 's/fk5; //g' mask.reg >> test.reg
 	python $<
+	convert $@ -trim $@
 
 overlaps.png: regroup_example.py 1997.fits bane_comp.vot
 	python $<
+	convert $@ -trim $@
 
 ds9.png: 1997.fits bane_comp.reg
 	 ~/Software/DS9/ds9 -single 1997.fits -cmap cubehelix0 -crop 1937 800 60 60 -pan 1937 800 \
@@ -88,12 +92,4 @@ mask.mim:
 mask.reg: mask.mim
 	MIMAS --mim2reg mask.mim mask.reg
 
-mask.png: 1997.fits mask.reg
-	~/Software/DS9/ds9 -single bane_rms.fits -crop 1640 1700 2870 3000 -cmap cubehelix0 \
-	-zoom to fit -zoom to 0.115 -scale limits 0 4e-4 -region load mask.reg \
-	-grid yes -grid type publication -grid numerics type exterior -grid axes type exterior \
-	-grid grid no -grid numerics color black -grid axes color black -colorbar off \
-	-grid title no \
-	-saveimage mask.png -exit
-	convert $@ -trim $@
 FORCE:
