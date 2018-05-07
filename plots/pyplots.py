@@ -21,8 +21,25 @@ def make_err_plot(par,ax1=None, annotate=None, tabs=(None, None, None)):
                             (tab['DEJ2000'][mask]-tab['dec'][mask])/tab['err_dec'][mask])/np.sqrt(2)
         else:
             mask = np.where((tab['err_{0}'.format(par)]>0))
-            data = np.abs(tab['{0}_1'.format(par)][mask]-tab['{0}_2'.format(par)][mask])/tab['err_{0}'.format(par)][mask]
-        data = np.log(data)
+            data = (tab['{0}_1'.format(par)][mask]-tab['{0}_2'.format(par)][mask])/tab['err_{0}'.format(par)][mask]
+
+        mask = np.isfinite(data)
+        mn = np.mean(data[mask])
+        md = np.median(data[mask])
+        mu = np.log(md)
+        sigma = np.sqrt(np.log(mn) - mu)*2
+        # median of data is the 'central' value, and should be 0.0
+        # std of the data is the scatter in the fraction in dex
+        # sum of the histogram should be 1 if we have correctly normalised the plot
+        print "\t",tab.title
+        print "\t\tmedian", md
+        print "\t\tmean", mn
+        print "\t\tstd", np.std(data)
+        print "\t\tmu", mu
+        print "\t\tsigma", sigma
+        
+
+        data = np.log(np.abs(data))
         # compute a density normalised histogram and convert into a PDF
         hist, _ = np.histogram(data, density=True, bins=nbins)
         hist /= np.sum(hist)
@@ -32,12 +49,6 @@ def make_err_plot(par,ax1=None, annotate=None, tabs=(None, None, None)):
         ax1.fill_between(steps_x, 0, steps_y, label=tab.title, alpha=0.5)
         ax1.plot(steps_x, steps_y)
         #ax1.fill_between(nbins[:-1], 0, hist, label=tab.title, alpha=0.5)
-        # median of data is the 'central' value, and should be 0.0
-        # std of the data is the scatter in the fraction in dex
-        # sum of the histogram should be 1 if we have correctly normalised the plot
-        print "\t",tab.title
-        print "\t\tmedian", 10**np.median(data)
-        print "\t\tstd", 10**np.std(data)
         #ax1.axvline(np.median(data))
     # remove the ytick labels
     ax1.set_yticklabels([])
